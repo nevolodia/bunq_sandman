@@ -1,6 +1,7 @@
 from bunq.sdk.context.api_environment_type import ApiEnvironmentType
 from bunq.sdk.context.bunq_context import BunqContext
 from bunq.sdk.context.api_context import ApiContext
+import argparse
 
 from parse_user import (
     get_user_transactions, 
@@ -9,7 +10,7 @@ from parse_user import (
 
 from parser import transactions_to_visualizer_format
 
-def to_web(api_key):
+def to_web(api_key, sugar_mode=False):
     
     api_context = ApiContext.create(
         ApiEnvironmentType.SANDBOX,
@@ -23,21 +24,29 @@ def to_web(api_key):
     agents = extract_transaction_agents(transactions)
     print(f"Found {len(transactions)} transactions and {len(agents)} agents")
 
-    re = transactions_to_visualizer_format(transactions, agents)
-    print(f"Data converted to visualizer format")
+    # Generate data with or without sugar mode enabled
+    re = transactions_to_visualizer_format(transactions, agents, sugar_mode=sugar_mode)
+    
+    if sugar_mode:
+        print(f"Data converted to visualizer format with sugar daddy mode ENABLED")
+    else:
+        print(f"Data converted to visualizer format")
 
     # save to file
-    with open("visualizer_data.json", "w") as f:
+    output_file = "visualizer_data_sugar.json" if sugar_mode else "visualizer_data.json"
+    with open(output_file, "w") as f:
         f.write(re)
-    print(f"Data saved to visualizer_data.json")
+    print(f"Data saved to {output_file}")
 
 # sandbox_e001b8029b87528aecbb9a238e89f3ea13f2fdb6cc19f662bf6ed0e1
 
 # run from key provided as cmd arg
 if __name__ == "__main__":
-    import sys
-    if len(sys.argv) != 2:
-        print("Usage: python to_web.py <api_key>")
-        sys.exit(1)
-    to_web(sys.argv[1])
+    parser = argparse.ArgumentParser(description='Convert Bunq transactions to visualizer format')
+    parser.add_argument('api_key', help='Bunq API key')
+    parser.add_argument('-sugar', '--sugar', action='store_true', 
+                        help='Enable sugar daddy mode to request money from central authority')
+    
+    args = parser.parse_args()
+    to_web(args.api_key, sugar_mode=args.sugar)
 

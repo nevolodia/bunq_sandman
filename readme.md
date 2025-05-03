@@ -1,4 +1,3 @@
-
 # 🏦 Bunq Sandman 🏦
 
 Bunq Sandman is a powerfull toolset which consists of two parts:
@@ -19,6 +18,7 @@ Furhter, it serves as a utility which retrieves data for the web graph platform.
 - **Agent Simulation** - Automatically create sandbox accounts for everyone you've interacted with
 - **Balance Management** - Intelligently calculate required starting balances for each account
 - **Chronological Replay** - Replay all transactions in the correct time sequence
+- **Sugar Daddy Mode** - Request funds from a central authority for initial balances and large transactions
 
 ### 💰 Account Management
 - **API Context Management** - Efficient storage and retrieval of API contexts
@@ -45,6 +45,11 @@ python history/main.py
 3. Run the to_web script to retrieve data for the web graph platform:
 ```
 python history/to_web.py <api_key>
+```
+
+4. For sugar daddy mode (using central authority for automatically adding funds), use:
+```
+python history/to_web.py <api_key> -sugar
 ```
 
 ## 🧩 How It Works
@@ -74,7 +79,7 @@ The system follows this process:
 
 #### 📊 `parser.py`
 - `to_visualizer_format()` - Formats transaction data for visualization
-- `transactions_to_visualizer_format()` - Converts transactions to JSON format
+- `transactions_to_visualizer_format()` - Converts transactions to JSON format with optional sugar daddy mode
 
 #### 🏃 `main.py`
 - Orchestrates the entire process from account setup to transaction replay
@@ -82,6 +87,7 @@ The system follows this process:
 
 #### 📊 `to_web.py`
 - Retrieves data for the web graph platform
+- Supports sugar daddy mode with the -sugar flag for requesting funds from central authority
 
 
 ## 📝 Limitations

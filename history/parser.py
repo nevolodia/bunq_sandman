@@ -3,9 +3,15 @@ import json
 import time
 from datetime import datetime
 
-def to_visualizer_format(transactions: List[Dict[str, Any]], agents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def to_visualizer_format(transactions: List[Dict[str, Any]], agents: List[Dict[str, Any]], sugar_mode: bool = False) -> List[Dict[str, Any]]:
     """
     Convert transactions and agents into a format suitable for visualization.
+    
+    Args:
+        transactions: List of transaction dictionaries
+        agents: List of agent dictionaries
+        sugar_mode: If True, enables sugar daddy mode where certain transactions 
+                   will be requested from the central authority
     """
     visualization_data = []
     
@@ -32,6 +38,25 @@ def to_visualizer_format(transactions: List[Dict[str, Any]], agents: List[Dict[s
             "account_id": "0",
             "monetary_account_id": "0"
         })
+        
+        # If sugar mode is enabled, request initial funds from sugar daddy
+        if sugar_mode:
+            # Generate a random request amount based on agent index
+            request_amount = (idx + 1) * 50.0
+            
+            # Add sugar daddy request
+            visualization_data.append({
+                "action_type": "RequestPayment",
+                "user_id": idx,
+                "account_id": "0",
+                "monetary_account_id": "0",
+                "amount_value": request_amount,
+                "amount_currency": "EUR",
+                "counterparty_account_id": "sugardaddy",  # Special identifier for sugar daddy
+                "description": f"Initial funds request for agent {idx}",
+                "expiry_date": int(time.time()) + 604800,  # 1 week expiry
+                "request_response_id": int(time.time())  # Use timestamp as unique ID
+            })
     
     # Process all transactions
     for transaction in transactions:
@@ -68,6 +93,11 @@ def to_visualizer_format(transactions: List[Dict[str, Any]], agents: List[Dict[s
             # Get transaction ID - RequestPayment needs an integer request_response_id
             request_id = int(transaction.get('id', 0))
             
+            # If sugar mode is enabled and amount is above threshold, request from sugar daddy instead
+            target_counterparty_id = counterparty_id
+            if sugar_mode and float(transaction['amount']) > 100.0:
+                target_counterparty_id = "sugardaddy"
+            
             visualization_data.append({
                 "action_type": "RequestPayment",
                 "user_id": user_id,
@@ -76,7 +106,7 @@ def to_visualizer_format(transactions: List[Dict[str, Any]], agents: List[Dict[s
                 "amount_value": float(transaction['amount']),
                 "amount_currency": transaction['currency'],
                 "counterparty_iban": transaction.get('counterparty_iban', "NL00BUNQ0000000000"),
-                "counterparty_account_id": counterparty_id,
+                "counterparty_account_id": target_counterparty_id,
                 "expiry_date": expiry_timestamp,
                 "request_response_id": request_id  # Integer for RequestPayment
             })
@@ -96,9 +126,15 @@ def to_visualizer_format(transactions: List[Dict[str, Any]], agents: List[Dict[s
     
     return visualization_data
 
-def transactions_to_visualizer_format(transactions: List[Dict[str, Any]], agents: List[Dict[str, Any]]) -> str:
+def transactions_to_visualizer_format(transactions: List[Dict[str, Any]], agents: List[Dict[str, Any]], sugar_mode: bool = False) -> str:
     """
     Convert transactions and agents into a string format suitable for visualization.
+    
+    Args:
+        transactions: List of transaction dictionaries
+        agents: List of agent dictionaries
+        sugar_mode: If True, enables sugar daddy mode where certain transactions 
+                   will be requested from the central authority
     """
-    visualization_data = to_visualizer_format(transactions, agents)
+    visualization_data = to_visualizer_format(transactions, agents, sugar_mode)
     return json.dumps(visualization_data, indent=2) 
