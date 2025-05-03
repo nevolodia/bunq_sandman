@@ -152,4 +152,3 @@ def test_create_user_and_accounts():
     interpreter.interpret(actions, event_queue)
     while not event_queue.empty():
         print(event_queue.get())
-test_create_user_and_accounts()
