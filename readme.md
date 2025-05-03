@@ -43,7 +43,7 @@ python history/main.py
 
 3. Run the to_web script to retrieve data for the web graph platform:
 ```
-python history/to_web.py
+python history/to_web.py <api_key>
 ```
 
 ## 🧩 How It Works

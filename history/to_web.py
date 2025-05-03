@@ -27,4 +27,13 @@ def to_web(api_key):
     with open("visualizer_data.json", "w") as f:
         f.write(re)
 
-to_web("sandbox_e001b8029b87528aecbb9a238e89f3ea13f2fdb6cc19f662bf6ed0e1")
+# sandbox_e001b8029b87528aecbb9a238e89f3ea13f2fdb6cc19f662bf6ed0e1
+
+# run from key provided as cmd arg
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 2:
+        print("Usage: python to_web.py <api_key>")
+        sys.exit(1)
+    to_web(sys.argv[1])
+
