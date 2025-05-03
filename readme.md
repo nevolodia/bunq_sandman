@@ -96,3 +96,78 @@ The system follows this process:
 - The system has rare edge cases where action in the replay may be incorrectly interpreted and therefore not executed.
 - The system does not handle several accounts of the same user.
 
+# 🏦 Bunq Sandman Visualizer 🏦
+
+A web-based interactive UI that allows creating and executing Bunq transaction flow graphs, with a backend that interprets and executes the flows against the Bunq API.
+
+## ✨ Features
+
+### 📊 Graph-Based Interface
+- **Visual Flow Builder** - Create transaction flows using an intuitive graph interface
+- **Node Editing** - Click on nodes to edit and configure financial actions
+- **Interactive Connections** - Connect nodes to define execution order
+- **Real-Time Validation** - Automatic validation of action parameters and schema
+
+### 🧩 Action Types
+- **User Creation** - Create sandbox users
+- **Account Management** - Create monetary accounts with customizable currencies and limits
+- **Payments** - Make payments between accounts
+- **Requests** - Create and respond to payment requests
+- **Account Overview** - Check account balances and status
+- **Timeline Control** - Add sleep actions to control execution timing
+
+### 🔄 Execution Engine
+- **Real-Time Execution** - Execute flows against the Bunq sandbox API
+- **Live Feedback** - See results and status of each action as it executes
+- **Sugar Daddy Integration** - Support for requests to the central authority (sugardaddy@bunq.com)
+
+## 🚀 Getting Started
+
+1. Launch the Streamlit app,
+
+2. Use the interface to:
+   - Create a flow diagram
+   - Configure each node with the appropriate parameters
+   - Execute the flow against the Bunq sandbox API
+   - View results and debug if necessary
+
+## 🧩 How It Works
+
+The Bunq Sandman Visualizer consists of two main components:
+
+1. **Frontend UI (streamlit_app.py)**:
+   - Built with Streamlit for a responsive web interface
+   - Uses streamlit_agraph for interactive graph visualization
+   - Provides forms for configuring each action node
+   - Validates action schemas before execution
+
+2. **Backend Interpreter (interpret.py)**:
+   - Maps UI actions to actual Bunq API calls
+   - Maintains relationships between UI identifiers and Bunq objects
+   - Tracks account relationships and balances
+   - Returns execution status for each action
+   - Provides special handling for sugar daddy requests
+
+## 📝 Component Documentation
+
+### 🎮 `streamlit_app.py`
+- **Session Management** - Maintains state of the graph, actions, and execution
+- **Action Validation** - Validates action schema before execution
+- **Graph Visualization** - Renders and manages interactive flow graph
+- **Action Forms** - Provides context-specific forms for configuring actions
+- **Execution Control** - Deploys flows to the Bunq API with progress tracking
+
+### 🔌 `interpret.py`
+- **BunqInterpreter** - Maps UI actions to Bunq API calls
+- **User/Account Mapping** - Maintains relationships between UI IDs and Bunq objects
+- **Action Handlers** - Specialized methods for executing different action types
+- **Event Queue** - Reports execution status and results back to the UI
+- **Sugar Daddy Support** - Special handling for central authority requests
+
+## 📝 Limitations
+
+- The system is designed for sandbox testing and not for production use
+- Some complex transaction types may require manual setup
+- The UI doesn't support parallel execution paths, only linear flows
+- Error recovery requires manual intervention
+
