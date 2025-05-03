@@ -33,6 +33,8 @@ Further, it serves as a utility which retrieves data for the web graph platform.
 - **Transaction Summary** - Get statistics about your transaction history
 - **Balance Requirements** - Calculate minimum balance needs for all accounts
 
+![image](https://github.com/user-attachments/assets/c158d26d-4feb-46d0-b5d4-49bab1710e0b)
+
 ## 🚀 Getting Started
 
 ### Basic Usage
