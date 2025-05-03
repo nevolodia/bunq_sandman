@@ -145,39 +145,30 @@ def respond_to_payment_request(
     Responds to all pending payment requests received from a specific counterparty IBAN.
     :param user_id: The user id.
     :param monetary_account_id: The id of the monetary account.
-    :param counterparty_iban: The IBAN of the counterparty who sent the request.
+    :param counterparty_iban: The IBAN alias of the counterparty who sent the request.
     :param status: The status to set ("ACCEPTED" or "REJECTED").
-    :return: List of updated RequestResponse objects.
+    :return: List of ids of updated request objects.
     """
     context_filename = f"contexts/{user_id}.json"
     api_context = ApiContext.restore(context_filename)
     BunqContext.load_api_context(api_context)
     request_responses = RequestResponseApiObject.list(monetary_account_id).value
 
-    updated_requests = []
-    for req in request_responses:
-        # Extract the actual RequestResponse object
-        rr = getattr(req, "RequestResponse", None)
-        if not rr:
-            continue
-        # Check for PENDING status and matching counterparty IBAN
-        if getattr(rr, "status", None) == "PENDING":
-            counterparty = getattr(rr, "counterparty_alias", None)
-            if (
-                counterparty
-                and getattr(counterparty, "type_", None) == "IBAN"
-                and getattr(counterparty, "value", None) == counterparty_iban
-            ):
-                result = RequestResponseApiObject.update(
-                    rr.id_,
-                    monetary_account_id,
-                    status=status
-                )
-                updated_requests.append(result)
+    updated_request_ids = []
+
+    for request in request_responses:
+        sender = request.counterparty_alias.pointer
+        if sender and request.status == "PENDING" and sender.type_ == "IBAN" and sender.value == counterparty_iban.value:
+            RequestResponseApiObject.update(
+                request.id_,
+                monetary_account_id,
+                status=status,
+            )
+            updated_request_ids.append(request.id_)
 
     BunqContext._api_context = None
     BunqContext._user_context = None
-    return updated_requests
+    return updated_request_ids
 
 def list_monetary_accounts_for_user(user_id: int):
     """
@@ -221,41 +212,3 @@ def get_iban_alias(account):
         if alias.type_ == "IBAN":
             return alias
     raise Exception("No IBAN alias found for account")
-
-def workflow_test():
-    # Create UserA and UserB
-    user_a_id = create_user_and_save_context()
-    user_b_id = create_user_and_save_context()
-
-    # Get default monetary accounts for both users (should be one by default)
-    accounts_a = list_monetary_accounts_for_user(user_a_id)
-    accounts_b = list_monetary_accounts_for_user(user_b_id)
-
-    account_a_id = accounts_a[0].MonetaryAccountBank.id_
-    account_b_id = accounts_b[0].MonetaryAccountBank.id_
-
-    print(f"UserA (id={user_a_id}) account id: {account_a_id}")
-    print(f"UserB (id={user_b_id}) account id: {account_b_id}")
-
-    # UserA requests 10 EUR from sugardaddy
-    create_payment_request(user_a_id, account_a_id, "10.00", "EUR", PointerObject("EMAIL", "sugardaddy@bunq.com"), "Sugar money request")
-    time.sleep(3)
-    print ("Sugar money received!")
-
-    # UserA sends 8 EUR to UserB's IBAN
-    # Find UserB's IBAN alias
-    iban_alias_b = get_iban_alias(accounts_b[0])
-    print (f"UserB (id={user_b_id}) IBAN: {iban_alias_b.value}")
-    create_payment(user_a_id, account_a_id, "8.00", "EUR", iban_alias_b)
-
-    # Refresh account info
-    accounts_a = list_monetary_accounts_for_user(user_a_id)
-    accounts_b = list_monetary_accounts_for_user(user_b_id)
-    balance_a = accounts_a[0].MonetaryAccountBank.balance.value
-    balance_b = accounts_b[0].MonetaryAccountBank.balance.value
-
-    print(f"UserA (id={user_a_id}) balance: {balance_a} EUR")
-    print(f"UserB (id={user_b_id}) balance: {balance_b} EUR")
-
-
-# workflow_test()
