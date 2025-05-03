@@ -71,12 +71,12 @@ ACTION_SCHEMA: dict[str, dict[str, type | tuple[type, ...]]] = {
         "request_response_id": int,
     },
     "RespondToPaymentRequest":  {
-        "user_id": int,
         "account_id": str,
-        "request_response_id": int,
+        "counterparty_account_id": int,
         "status": str,
     },
     "ListPayments":             {"user_id": int, "account_id": str},
+    "Sleep":                    {"seconds": int},
 }
 
 def validate_action_schema(action: dict) -> None:
@@ -369,6 +369,15 @@ if editing and st.session_state.editing_modal:
                         request_response_id=current["request_response_id"],
                     )
                 
+                elif action_type == "Sleep":
+                    sleep_seconds = st.number_input("Sleep duration (seconds)", 1, 60, 5, step=1)
+                    params.update(seconds=sleep_seconds)    
+                elif action_type == "RespondToPaymentRequest":
+                    counterparty_account_id = st.selectbox("counterparty_account_id", st.session_state.account_ids)
+                    account_id = st.selectbox("account_id", st.session_state.account_ids)
+                    status = st.selectbox("status", ("ACCEPTED", "REJECTED"))
+                    params.update(counterparty_account_id=counterparty_account_id, account_id=account_id, status=status)
+
                 # Other action types follow similar patterns...
                 # Add your other action types here
                 
@@ -474,6 +483,7 @@ if not editing:
             "RequestPayment",
             "RespondToPaymentRequest",
             "ListPayments",
+            "Sleep",
         ),
     )
 
@@ -632,13 +642,13 @@ if not editing:
         else:
             owner = st.sidebar.selectbox("user_id", st.session_state.user_ids)
             acc   = st.sidebar.selectbox("account_id", st.session_state.account_ids)
-            req   = st.sidebar.selectbox("request_response_id", st.session_state.request_ids)
+            req   = st.sidebar.selectbox("counterparty_account_id", st.session_state.account_ids)
             status= st.sidebar.selectbox("status", ("ACCEPTED", "REJECTED"))
             if st.sidebar.button("Add action"):
                 params.update(
                     user_id=owner,
                     account_id=acc,
-                    request_response_id=req,
+                    counterparty_account_id=req,
                     status=status,
                 )
                 st.session_state.actions.append({"action_type": action_type, **params})
@@ -669,6 +679,19 @@ if not editing:
                 if len(st.session_state.nodes) > 1:
                     st.session_state.edges.append(Edge(st.session_state.nodes[-2].id, node_id))
                 st.rerun()
+    elif action_type == "Sleep":
+        sleep_seconds = st.sidebar.number_input("Sleep duration (seconds)", 1, 60, 5, step=1)
+        if st.sidebar.button("Add action"):
+            params.update(seconds=sleep_seconds)
+            st.session_state.actions.append({"action_type": action_type, **params})
+            
+            node_id = str(next_id())
+            st.session_state.nodes.append(
+                Node(id=node_id, label=f"{action_type} ({sleep_seconds}s)", shape="ellipse")
+            )
+            if len(st.session_state.nodes) > 1:
+                st.session_state.edges.append(Edge(st.session_state.nodes[-2].id, node_id))
+            st.rerun()
 
 # -----------------------------------------------------------------------------
 # 4.  DEPLOY   (replaces "Generate bunq-SDK code")

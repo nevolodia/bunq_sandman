@@ -3,13 +3,14 @@
 
 Bunq Sandman is a powerfull toolset which consists of two parts:
 
-1. **Bunq Sandman History** - A utility that retrieves data from production or sandbox environment and creates a clone for another sandbox account set, so that algorithms can be safely tested on real cases.
-Furhter, it serves as a utility which retrieves data for the web graph platform.
-
-2. **Bunq Sandman Visualizer** - 
+1. **Bunq Sandman History**,
+2. **Bunq Sandman Visualizer**.
 
 
 # 🏦 Bunq Sandman History 🏦
+
+A utility that retrieves data from production or sandbox environment and creates a clone for another sandbox account set, so that algorithms can be safely tested on real cases.
+Furhter, it serves as a utility which retrieves data for the web graph platform.
 
 ## ✨ Features
 
