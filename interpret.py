@@ -16,52 +16,67 @@ class BunqInterpreter:
             action_type = action.get("action_type", event_queue)
             if action_type == "CreateUserPerson":
                 try:
+                    start = time.time()
                     self._create_user_person(action, event_queue)
-                    event_queue.put({ "action_index": action_i, "type": "success", "message": f"User created successfully"})
+                    elapsed = time.time() - start
+                    event_queue.put({ "action_index": action_i, "type": "success", "message": f"User created successfully in {elapsed:.3f}s"})
                 except Exception as e:
                     event_queue.put({ "action_index": action_i, "type": "error", "message": f"Error creating user: {e}" })
             elif action_type == "LoginUserPerson":
                 try:
+                    start = time.time()
                     self._login_user_person(action, event_queue)
-                    event_queue.put({ "action_index": action_i, "type": "success", "message": f"User logged in successfully" })
+                    elapsed = time.time() - start
+                    event_queue.put({ "action_index": action_i, "type": "success", "message": f"User logged in successfully in {elapsed:.3f}s" })
                 except Exception as e:
                     event_queue.put({ "action_index": action_i, "type": "error", "message": f"Error logging in user: {e}" })
             elif action_type == "CreateMonetaryAccount":
                 try:
+                    start = time.time()
                     self._create_monetary_account(action, event_queue)
-                    event_queue.put({ "action_index": action_i, "type": "success", "message": f"Monetary account created successfully" })
+                    elapsed = time.time() - start
+                    event_queue.put({ "action_index": action_i, "type": "success", "message": f"Monetary account created successfully in {elapsed:.3f}s" })
                 except Exception as e:
                     event_queue.put({ "action_index": action_i, "type": "error", "message": f"Error creating monetary account: {e}" })
             elif action_type == "GetAccountOverview":
                 try:
+                    start = time.time()
                     self._get_account_overview(action, event_queue, action_i)
-                    event_queue.put({"action_index": action_i, "type": "success", "message": "Account overview retrieved successfully"})
+                    elapsed = time.time() - start
+                    event_queue.put({"action_index": action_i, "type": "success", "message": f"Account overview retrieved successfully in {elapsed:.3f}s"})
                 except Exception as e:
                     event_queue.put({"action_index": action_i, "type": "error", "message": f"Error retrieving account overview: {e}"})
             elif action_type == "MakePayment":
                 try:
+                    start = time.time()
                     self._make_payment(action, event_queue)
-                    event_queue.put({ "action_index": action_i, "type": "success", "message": "Payment made successfully" })
+                    elapsed = time.time() - start
+                    event_queue.put({ "action_index": action_i, "type": "success", "message": f"Payment made successfully in {elapsed:.3f}s" })
                 except Exception as e:
                     event_queue.put({ "action_index": action_i, "type": "error", "message": f"Error making payment: {e}" })
             elif action_type == "RequestPayment":
                 try:
+                    start = time.time()
                     self._request_payment(action, event_queue)
-                    event_queue.put({ "action_index": action_i, "type": "success", "message": "Payment request sent successfully" })
+                    elapsed = time.time() - start
+                    event_queue.put({ "action_index": action_i, "type": "success", "message": f"Payment request sent successfully in {elapsed:.3f}s" })
                 except Exception as e:
                     event_queue.put({ "action_index": action_i, "type": "error", "message": f"Error sending payment request: {e}" })
             elif action_type == "RespondToPaymentRequest":
                 try:
+                    start = time.time()
                     self._respond_to_payment_request(action, event_queue, action_i)
-                    event_queue.put({ "action_index": action_i, "type": "success", "message": "Responded to payment request successfully" })
+                    elapsed = time.time() - start
+                    event_queue.put({ "action_index": action_i, "type": "success", "message": f"Responded to payment request successfully in {elapsed:.3f}s" })
                 except Exception as e:
                     event_queue.put({ "action_index": action_i, "type": "error", "message": f"Error responding to payment request: {e}" })
-            elif action_type == "Sleep":
+            elif action_type == "Sleep":  # Let me sleep please Im so tired
                 sleep_time = action.get("seconds", 1)
                 event_queue.put({"type": "success", "message": f"Sleeping for {sleep_time} seconds"})
                 time.sleep(sleep_time)
             else:
                 event_queue.put({"action_index": action_i, "type": "error", "message": f"Unknown action type: {action_type}"})
+
 
     def _create_user_person(self, action, event_queue):
         user_id = action.get("user_id")
