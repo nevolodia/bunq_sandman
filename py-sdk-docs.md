@@ -514,4 +514,3 @@ Check if the resources still exist (e.g., a monetary account may have been close
 Rate Limiting
 
 The bunq API has rate limits; implement exponential backoff if you encounter rate limiting
-
