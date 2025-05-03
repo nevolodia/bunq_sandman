@@ -1,6 +1,6 @@
 # 🏦 Bunq Sandman 🏦
 
-Bunq Sandman is a powerfull toolset which consists of two parts:
+Bunq Sandman is a powerful toolset which consists of two parts:
 
 1. **Bunq Sandman History**,
 2. **Bunq Sandman Visualizer**.
