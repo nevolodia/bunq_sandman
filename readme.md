@@ -8,6 +8,8 @@ Bunq Sandman is a powerful toolset which consists of two parts:
 1. **Bunq Sandman History**,
 2. **Bunq Sandman Visualizer**.
 
+![image](https://github.com/user-attachments/assets/adf84c9d-1cc9-45bc-aa86-36bb2e726e95)
+
 
 # 🏦 Bunq Sandman History 🏦
 
