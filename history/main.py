@@ -21,14 +21,6 @@ from parse_user import (
 from parser import transactions_to_visualizer_format
 
 def main():
-    
-    #api_context = ApiContext.create(
-    #    ApiEnvironmentType.SANDBOX,
-    #    "07d45edfffe208fadebd57358bac7472dd5e8272fd1eec333559e7c57679051a",
-    #    "bunq api"
-    #)
-    #api_context.save("bunq_api_context.conf")
-
     # Try to load main user, or create it if no main file exists
     main_user_path = "users/main_user.conf"
     if not os.path.exists(main_user_path):
@@ -74,12 +66,6 @@ def main():
     transactions = get_user_transactions()
     agents = extract_transaction_agents(transactions)
 
-
-    #print(transactions_to_visualizer_format(transactions, agents))
-
-
-
-    
     # Calculate minimum initial balances for each agent
     required_balances = calculate_agent_initial_balances(transactions, agents)
     print_agent_balance_requirements(required_balances)
@@ -117,47 +103,9 @@ def main():
         print("Exiting...")
         return
 
-
-    
     # Replay the transactions and print the results
     replay_results = replay_transactions_chronologically(transactions, iban_to_user_map, main_user_path)
     print_replay_results(replay_results)
 
-    # Output main user copy IBAN    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""
-    # Ask what the user wants to do
-    print("\nWhat would you like to do?")
-    print("1. Retrieve all real transactions")
-    print("2. Generate mock transactions")
-    choice = input("Enter your choice (1/2): ").strip()
-
-    if choice == "2":
-        # Generate mock transactions
-        print("\n=== GENERATING MOCK TRANSACTIONS ===")
-        generate_mock_transactions()
-    
-    if choice == "1" or choice == "2":
-        # Placeholder for retrieving transactions
-        pass
-"""
-
 if __name__ == "__main__":
     main()
-
-
-
