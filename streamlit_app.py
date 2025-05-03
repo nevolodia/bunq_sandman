@@ -379,7 +379,7 @@ if not editing:
             currency= st.sidebar.selectbox("amount_currency", ("EUR", "USD", "GBP"))
             counterparty = st.sidebar.selectbox(
                 "counterparty_iban",
-                ["SugarDaddy"] + st.session_state.account_ids
+                ["sugardaddy"] + st.session_state.account_ids
             )
             expiry  = st.sidebar.number_input(
                 "expiry_date (epoch‐secs)",
@@ -528,10 +528,10 @@ def deploy(actions: list[dict]):
     import queue
     import threading
     # TODO: adjust this import to point at your actual interpreter
-    from your_interpreter_module import Interpreter
+    from interpret import BunqInterpreter
 
     msg_queue = queue.Queue()
-    interpreter = Interpreter()
+    interpreter = BunqInterpreter()
     thread = threading.Thread(
         target=lambda: interpreter.interpret(actions, msg_queue),
         daemon=True,

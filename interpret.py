@@ -69,7 +69,7 @@ class BunqInterpreter:
         
         overview = api.get_account(user_id, account_id)
         balance = overview.MonetaryAccountBank.balance.value
-        event_queue.put(f"Account: {action["account_id"]}, Balance: {balance}")
+        event_queue.put(f"Account: {action['account_id']}, Balance: {balance}")
 
     def _make_payment(self, action, event_queue):
         account_id = self.account_map[action["account_id"]]
@@ -118,4 +118,3 @@ def test_create_user_and_accounts():
     interpreter.interpret(actions, event_queue)
     while not event_queue.empty():
         print(event_queue.get())
-test_create_user_and_accounts()
