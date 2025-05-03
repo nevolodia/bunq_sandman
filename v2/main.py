@@ -18,6 +18,8 @@ from parse_user import (
     print_replay_results
 )
 
+from parser import transactions_to_visualizer_format
+
 def main():
     
     #api_context = ApiContext.create(
@@ -71,6 +73,12 @@ def main():
     # Get transactions of the main user and agents he interacted with
     transactions = get_user_transactions()
     agents = extract_transaction_agents(transactions)
+
+
+    #print(transactions_to_visualizer_format(transactions, agents))
+
+
+
     
     # Calculate minimum initial balances for each agent
     required_balances = calculate_agent_initial_balances(transactions, agents)
