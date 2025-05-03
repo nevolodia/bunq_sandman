@@ -154,13 +154,13 @@ if editing and st.session_state.editing_modal:
                     )
                 
                 elif action_type == "GetAccountOverview":
-                    if "monetary_account_id" in current and current["monetary_account_id"] in st.session_state.account_ids:
-                        acc_idx = st.session_state.account_ids.index(current["monetary_account_id"])
+                    if "account_id" in current and current["account_id"] in st.session_state.account_ids:
+                        acc_idx = st.session_state.account_ids.index(current["account_id"])
                     else:
                         acc_idx = 0
                     
-                    acc = st.selectbox("monetary_account_id", st.session_state.account_ids, index=acc_idx)
-                    params.update(monetary_account_id=acc)
+                    acc = st.selectbox("account_id", st.session_state.account_ids, index=acc_idx)
+                    params.update(account_id=acc)
                 
                 elif action_type == "MakePayment":
                     if "user_id" in current and current["user_id"] in st.session_state.user_ids:
@@ -168,8 +168,8 @@ if editing and st.session_state.editing_modal:
                     else:
                         user_idx = 0
                     
-                    if "monetary_account_id" in current and current["monetary_account_id"] in st.session_state.account_ids:
-                        acc_idx = st.session_state.account_ids.index(current["monetary_account_id"])
+                    if "account_id" in current and current["account_id"] in st.session_state.account_ids:
+                        acc_idx = st.session_state.account_ids.index(current["account_id"])
                     else:
                         acc_idx = 0
                         
@@ -185,14 +185,14 @@ if editing and st.session_state.editing_modal:
                         curr_idx = 0
                     
                     owner = st.selectbox("user_id (sender)", st.session_state.user_ids, index=user_idx)
-                    src_acc = st.selectbox("monetary_account_id (source)", st.session_state.account_ids, index=acc_idx)
+                    src_acc = st.selectbox("account_id (source)", st.session_state.account_ids, index=acc_idx)
                     amount = st.number_input("amount_value", 0.00, step=0.01, value=current.get("amount_value", 10.00))
                     currency = st.selectbox("amount_currency", currency_opts, index=curr_idx)
                     counterparty = st.selectbox("counterparty_iban", st.session_state.account_ids, index=cpty_idx)
                     
                     params.update(
                         user_id=owner,
-                        monetary_account_id=src_acc,
+                        account_id=src_acc,
                         amount_value=amount,
                         amount_currency=currency,
                         counterparty_iban=counterparty,
@@ -217,7 +217,7 @@ if editing and st.session_state.editing_modal:
                             elif action_type == "CreateMonetaryAccount":
                                 node.label = f"{action_type} (acc {current['account_id']})"
                             elif action_type == "GetAccountOverview":
-                                node.label = f"{action_type} (acc {params['monetary_account_id']})"
+                                node.label = f"{action_type} (acc {params['account_id']})"
                             elif action_type == "MakePayment":
                                 node.label = f"{action_type} ({params['amount_value']} {params['amount_currency']} → {params['counterparty_iban']})"
                             # Update other action types accordingly
@@ -318,9 +318,9 @@ if not editing:
         if not st.session_state.account_ids:
             st.sidebar.info("⚠️  No account yet.")
         else:
-            acc = st.sidebar.selectbox("monetary_account_id", st.session_state.account_ids)
+            acc = st.sidebar.selectbox("account_id", st.session_state.account_ids)
             if st.sidebar.button("Add action"):
-                params.update(monetary_account_id=acc)
+                params.update(account_id=acc)
                 st.session_state.actions.append({"action_type": action_type, **params})
 
                 node_id = str(next_id())
@@ -342,17 +342,14 @@ if not editing:
             st.sidebar.info("⚠️  Need an account first.")
         else:
             owner = st.sidebar.selectbox("user_id (sender)", st.session_state.user_ids)
-            src_acc = st.sidebar.selectbox("monetary_account_id (source)", st.session_state.account_ids)
+            src_acc = st.sidebar.selectbox("account_id (source)", st.session_state.account_ids)
             amount = st.sidebar.number_input("amount_value", 0.00, step=0.01, value=10.00)
             currency = st.sidebar.selectbox("amount_currency", ("EUR", "USD", "GBP"))
-            # select one of your virtual accounts as counterparty
-            counterparty = st.sidebar.selectbox(
-                "counterparty_iban", st.session_state.account_ids
-            )
+            counterparty = st.sidebar.selectbox("counterparty_iban", st.session_state.account_ids)
             if st.sidebar.button("Add action"):
                 params.update(
                     user_id=owner,
-                    monetary_account_id=src_acc,
+                    account_id=src_acc,
                     amount_value=amount,
                     amount_currency=currency,
                     counterparty_iban=counterparty,
@@ -360,7 +357,6 @@ if not editing:
                 st.session_state.actions.append({"action_type": action_type, **params})
 
                 node_id = str(next_id())
-                # explicit id/label so the text actually shows up
                 st.session_state.nodes.append(
                     Node(
                         id=node_id,
@@ -370,11 +366,91 @@ if not editing:
                 )
                 if len(st.session_state.nodes) > 1:
                     st.session_state.edges.append(Edge(st.session_state.nodes[-2].id, node_id))
-                
                 st.rerun()
 
-    # Add the remaining action types similarly
-    # For brevity, I'm not including all of them here
+    # ---------- RequestPayment ----------
+    elif action_type == "RequestPayment":
+        if not st.session_state.account_ids:
+            st.sidebar.info("⚠️  Need an account first.")
+        else:
+            owner   = st.sidebar.selectbox("user_id (receiver)", st.session_state.user_ids)
+            acc_rcv = st.sidebar.selectbox("account_id (receiver)", st.session_state.account_ids)
+            amount  = st.sidebar.number_input("amount_value", 0.00, step=0.01, value=25.00)
+            currency= st.sidebar.selectbox("amount_currency", ("EUR", "USD", "GBP"))
+            counterparty = st.sidebar.selectbox(
+                "counterparty_iban",
+                ["SugarDaddy"] + st.session_state.account_ids
+            )
+            expiry  = st.sidebar.number_input(
+                "expiry_date (epoch‐secs)",
+                int(datetime.utcnow().timestamp()) + 7200
+            )
+            if st.sidebar.button("Add action"):
+                new_req_id = len(st.session_state.request_ids) + 1
+                st.session_state.request_ids.append(new_req_id)
+                params.update(
+                    user_id=owner,
+                    account_id=acc_rcv,
+                    amount_value=amount,
+                    amount_currency=currency,
+                    counterparty_iban=counterparty,
+                    expiry_date=expiry,
+                    request_response_id=new_req_id,
+                )
+                st.session_state.actions.append({"action_type": action_type, **params})
+
+                node_id = str(next_id())
+                st.session_state.nodes.append(
+                    Node(id=node_id, label=f"{action_type} (req {new_req_id})", shape="ellipse")
+                )
+                if len(st.session_state.nodes) > 1:
+                    st.session_state.edges.append(Edge(st.session_state.nodes[-2].id, node_id))
+                st.rerun()
+
+    # ---------- RespondToPaymentRequest ----------
+    elif action_type == "RespondToPaymentRequest":
+        if not st.session_state.request_ids:
+            st.sidebar.info("⚠️  No request to answer.")
+        else:
+            owner = st.sidebar.selectbox("user_id", st.session_state.user_ids)
+            acc   = st.sidebar.selectbox("account_id", st.session_state.account_ids)
+            req   = st.sidebar.selectbox("request_response_id", st.session_state.request_ids)
+            status= st.sidebar.selectbox("status", ("ACCEPTED", "REJECTED"))
+            if st.sidebar.button("Add action"):
+                params.update(
+                    user_id=owner,
+                    account_id=acc,
+                    request_response_id=req,
+                    status=status,
+                )
+                st.session_state.actions.append({"action_type": action_type, **params})
+
+                node_id = str(next_id())
+                st.session_state.nodes.append(
+                    Node(id=node_id, label=f"{action_type} ({status})", shape="box")
+                )
+                if len(st.session_state.nodes) > 1:
+                    st.session_state.edges.append(Edge(st.session_state.nodes[-2].id, node_id))
+                st.rerun()
+
+    # ---------- ListPayments ----------
+    elif action_type == "ListPayments":
+        if not st.session_state.account_ids:
+            st.sidebar.info("⚠️  Need an account first.")
+        else:
+            owner = st.sidebar.selectbox("user_id", st.session_state.user_ids)
+            acc   = st.sidebar.selectbox("account_id", st.session_state.account_ids)
+            if st.sidebar.button("Add action"):
+                params.update(user_id=owner, account_id=acc)
+                st.session_state.actions.append({"action_type": action_type, **params})
+
+                node_id = str(next_id())
+                st.session_state.nodes.append(
+                    Node(id=node_id, label=f"{action_type} (acc {acc})", shape="ellipse")
+                )
+                if len(st.session_state.nodes) > 1:
+                    st.session_state.edges.append(Edge(st.session_state.nodes[-2].id, node_id))
+                st.rerun()
 
 # -----------------------------------------------------------------------------
 # 4.  DEPLOY   (replaces "Generate bunq-SDK code")
@@ -446,13 +522,38 @@ if user_input:
 
 def deploy(actions: list[dict]):
     """
-    Placeholder ‑ here you would start the interpreter thread
-    and pass it `actions`.
+    Start the interpreter in a background thread, stream its log messages,
+    and display them in the Streamlit app.
     """
-    st.success("🚀  Actions sent for deployment!")
-    # For demo purposes just dump to file:
-    with open("actions_run.json", "w") as fh:
-        json.dump(actions, fh, indent=2)
+    import queue
+    import threading
+    # TODO: adjust this import to point at your actual interpreter
+    from your_interpreter_module import Interpreter
+
+    msg_queue = queue.Queue()
+    interpreter = Interpreter()
+    thread = threading.Thread(
+        target=lambda: interpreter.interpret(actions, msg_queue),
+        daemon=True,
+    )
+    thread.start()
+
+    # prepare sidebar log area
+    logs = []
+    log_placeholder = st.sidebar.empty()
+    st.sidebar.info("🔄 Interpreter started…")
+
+    # pull messages from the queue and append to the sidebar text_area
+    while True:
+        try:
+            msg = msg_queue.get(timeout=0.5)
+            logs.append(msg)
+            log_placeholder.text_area("🛠️ Debug log", "\n".join(logs), height=300)
+        except queue.Empty:
+            if not thread.is_alive():
+                break
+
+    st.sidebar.success("✅ Interpreter finished processing actions!")
 
 if st.button("Deploy ▶︎"):
     deploy(st.session_state.actions)
