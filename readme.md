@@ -1,6 +1,6 @@
 # 🏦 Bunq Sandman 🏦
 
-Bunq Sandman is a powerfull toolset which consists of two parts:
+Bunq Sandman is a powerful toolset which consists of two parts:
 
 1. **Bunq Sandman History**,
 2. **Bunq Sandman Visualizer**.
@@ -9,7 +9,7 @@ Bunq Sandman is a powerfull toolset which consists of two parts:
 # 🏦 Bunq Sandman History 🏦
 
 A utility that retrieves data from production or sandbox environment and creates a clone for another sandbox account set, so that algorithms can be safely tested on real cases.
-Furhter, it serves as a utility which retrieves data for the web graph platform.
+Further, it serves as a utility which retrieves data for the web graph platform.
 
 ## ✨ Features
 
@@ -92,9 +92,8 @@ The system follows this process:
 
 ## 📝 Limitations
 
-- The system sometimes miscalulates requiered starting balances.
 - The system has rare edge cases where action in the replay may be incorrectly interpreted and therefore not executed.
-- The system does not handle several accounts of the same user.
+- The system can miscalculate required starting balances.
 
 # 🏦 Bunq Sandman Visualizer 🏦
 
@@ -168,6 +167,6 @@ The Bunq Sandman Visualizer consists of two main components:
 
 - The system is designed for sandbox testing and not for production use
 - Some complex transaction types may require manual setup
-- The UI doesn't support parallel execution paths, only linear flows
+- The UI doesn't support parallel execution paths, only linear flows. In the future, it is possible to extend the system
 - Error recovery requires manual intervention
 
