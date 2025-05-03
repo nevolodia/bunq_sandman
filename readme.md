@@ -82,3 +82,10 @@ The system follows this process:
 #### 📊 `to_web.py`
 - Retrieves data for the web graph platform
 
+
+## 📝 Limitations
+
+- The system sometimes miscalulates requiered starting balances.
+- The system has rare edge cases where action in the replay may be incorrectly interpreted and therefore not executed.
+- The system does not handle several accounts of the same user.
+
