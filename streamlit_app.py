@@ -714,7 +714,7 @@ if ask_clicked and ai_query.strip():
     try:
         client = OpenAI(
             base_url="https://integrate.api.nvidia.com/v1",
-            api_key="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",
+            api_key="KEY",
         )
         system_prompt = (
             "You are an expert Bunq-sandbox assistant.\n"
@@ -801,7 +801,7 @@ elif gen_clicked and ai_query.strip():
     try:
         client = OpenAI(
             base_url="https://integrate.api.nvidia.com/v1",
-            api_key="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",
+            api_key="KEY",
         )
         resp = client.chat.completions.create(
             model="qwen/qwq-32b",
