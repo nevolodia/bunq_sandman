@@ -2,7 +2,6 @@ import requests
 from bunq.sdk.context.api_context import ApiContext
 from bunq.sdk.context.bunq_context import BunqContext
 from bunq import ApiEnvironmentType
-
 from bunq.sdk.model.generated.endpoint import (
     MonetaryAccountBankApiObject,
     MonetaryAccountApiObject,
@@ -11,8 +10,8 @@ from bunq.sdk.model.generated.endpoint import (
     RequestResponseApiObject,
 )
 from bunq.sdk.model.generated.object_ import AmountObject, PointerObject
-import pprint
 import time
+import os
 
 BUNQ_HOST = "https://public-api.sandbox.bunq.com"  # or your desired default host
 
@@ -30,6 +29,7 @@ def create_user_and_save_context():
     user_id = response.json()["Response"][0]["ApiKey"]["user"]["UserPerson"]["id"]
 
     # Context filename depends on user id
+    os.makedirs("contexts", exist_ok=True)
     context_filename = f"contexts/{user_id}.json"
 
     # Step 2: Create API context for sandbox
