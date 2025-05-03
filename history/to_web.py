@@ -21,11 +21,15 @@ def to_web(api_key):
     # Get transactions of the main user and agents he interacted with
     transactions = get_user_transactions()
     agents = extract_transaction_agents(transactions)
+    print(f"Found {len(transactions)} transactions and {len(agents)} agents")
 
     re = transactions_to_visualizer_format(transactions, agents)
+    print(f"Data converted to visualizer format")
+
     # save to file
     with open("visualizer_data.json", "w") as f:
         f.write(re)
+    print(f"Data saved to visualizer_data.json")
 
 # sandbox_e001b8029b87528aecbb9a238e89f3ea13f2fdb6cc19f662bf6ed0e1
 

@@ -65,12 +65,8 @@ def to_visualizer_format(transactions: List[Dict[str, Any]], agents: List[Dict[s
             # Get expiry timestamp (1 week from now)
             expiry_timestamp = int(time.time()) + 604800
             
-            # Get transaction ID or use default (0)
-            # Convert to integer since the schema expects an integer
+            # Get transaction ID - RequestPayment needs an integer request_response_id
             request_id = int(transaction.get('id', 0))
-            
-            # Properly convert counterparty_id to integer if it's a numeric string
-            counterparty_id_int = int(counterparty_id) if counterparty_id.isdigit() else 0
             
             visualization_data.append({
                 "action_type": "RequestPayment",
@@ -82,7 +78,7 @@ def to_visualizer_format(transactions: List[Dict[str, Any]], agents: List[Dict[s
                 "counterparty_iban": transaction.get('counterparty_iban', "NL00BUNQ0000000000"),
                 "counterparty_account_id": counterparty_id,
                 "expiry_date": expiry_timestamp,
-                "request_response_id": request_id
+                "request_response_id": request_id  # Integer for RequestPayment
             })
             
             # Add a response if status is available
@@ -93,9 +89,9 @@ def to_visualizer_format(transactions: List[Dict[str, Any]], agents: List[Dict[s
                     "user_id": user_id,
                     "account_id": "0",
                     "monetary_account_id": "0",
-                    "request_response_id": int(transaction['id']),
+                    "request_response_id": int(transaction['id']),  # Integer for request_response_id
                     "status": status,
-                    "counterparty_account_id": counterparty_id_int  # Properly converted to integer
+                    "counterparty_account_id": counterparty_id  # String for counterparty_account_id
                 })
     
     return visualization_data
